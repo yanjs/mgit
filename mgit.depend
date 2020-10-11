@@ -1,0 +1,51 @@
+# depslib dependency file v1.0
+1602388427 source:/home/felix/proj/mgit/argparse.c
+
+1602439590 source:/home/felix/proj/mgit/cmd_init.c
+	<stdio.h>
+
+1602343437 source:/home/felix/proj/mgit/main.c
+	<stdio.h>
+	<stdlib.h>
+
+1602434070 source:/home/felix/proj/mgit/mgit.c
+	"subcommands.h"
+	<string.h>
+	<stdio.h>
+
+1602434789 /home/felix/proj/mgit/subcommands.h
+	"cmd_init.h"
+	"cmd_hash_object.h"
+
+1602387837 /home/felix/proj/mgit/init.h
+	"types.h"
+
+1602388185 /home/felix/proj/mgit/types.h
+
+1602446163 source:/home/felix/proj/mgit/objects.c
+	"objects.h"
+	"filesystem.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<openssl/sha.h>
+
+1602445745 /home/felix/proj/mgit/objects.h
+
+1602435488 source:/home/felix/proj/mgit/filesystem.c
+	<sys/types.h>
+	<sys/stat.h>
+
+1602433201 /home/felix/proj/mgit/filesystem.h
+
+1602387837 /home/felix/proj/mgit/cmd_init.h
+	"types.h"
+
+1602436011 /home/felix/proj/mgit/cmd_hash_object.h
+	"types.h"
+
+1602446261 source:/home/felix/proj/mgit/cmd_hash_object.c
+	"cmd_hash_object.h"
+	"objects.h"
+	<stdio.h>
+
