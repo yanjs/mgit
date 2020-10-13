@@ -3,5 +3,6 @@
 
 #include "cmd_init.h"
 #include "cmd_hash_object.h"
+#include "cmd_cat_file.h"
 
 #endif

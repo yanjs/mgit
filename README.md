@@ -6,4 +6,6 @@ A simple git-like version control system
 
 `mgit init [path]`
 
-`mgit hash-object files [...]`
+`mgit hash-object [files...]`
+
+`mgit cat-file [files...]

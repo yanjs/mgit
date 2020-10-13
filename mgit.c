@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 static struct cmd subcommands[] = {
+    {"cat-file", cmd_cat_file},
     {"hash-object", cmd_hash_object},
     {"init", cmd_init},
 };

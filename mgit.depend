@@ -1,28 +1,30 @@
 # depslib dependency file v1.0
 1602388427 source:/home/felix/proj/mgit/argparse.c
 
-1602439590 source:/home/felix/proj/mgit/cmd_init.c
+1602446420 source:/home/felix/proj/mgit/cmd_init.c
 	<stdio.h>
 
 1602343437 source:/home/felix/proj/mgit/main.c
 	<stdio.h>
 	<stdlib.h>
 
-1602434070 source:/home/felix/proj/mgit/mgit.c
+1602552847 source:/home/felix/proj/mgit/mgit.c
 	"subcommands.h"
 	<string.h>
 	<stdio.h>
 
-1602434789 /home/felix/proj/mgit/subcommands.h
+1602552897 /home/felix/proj/mgit/subcommands.h
 	"cmd_init.h"
 	"cmd_hash_object.h"
+	"cmd_cat_file.h"
 
 1602387837 /home/felix/proj/mgit/init.h
 	"types.h"
 
-1602388185 /home/felix/proj/mgit/types.h
+1602552879 /home/felix/proj/mgit/types.h
+	<stdio.h>
 
-1602446163 source:/home/felix/proj/mgit/objects.c
+1602553822 source:/home/felix/proj/mgit/objects.c
 	"objects.h"
 	"filesystem.h"
 	<stdio.h>
@@ -30,7 +32,8 @@
 	<string.h>
 	<openssl/sha.h>
 
-1602445745 /home/felix/proj/mgit/objects.h
+1602553840 /home/felix/proj/mgit/objects.h
+	"types.h"
 
 1602435488 source:/home/felix/proj/mgit/filesystem.c
 	<sys/types.h>
@@ -48,4 +51,11 @@
 	"cmd_hash_object.h"
 	"objects.h"
 	<stdio.h>
+
+1602553643 source:/home/felix/proj/mgit/cmd_cat_file.c
+	"cmd_cat_file.h"
+	"objects.h"
+
+1602552866 /home/felix/proj/mgit/cmd_cat_file.h
+	"types.h"
 
