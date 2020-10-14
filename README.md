@@ -8,4 +8,4 @@ A simple git-like version control system
 
 `mgit hash-object [files...]`
 
-`mgit cat-file [files...]
+`mgit cat-file [files...]`
