@@ -8,12 +8,12 @@
 	<stdio.h>
 	<stdlib.h>
 
-1602552847 source:/home/felix/proj/mgit/mgit.c
+1602647077 source:/home/felix/proj/mgit/mgit.c
 	"subcommands.h"
 	<string.h>
 	<stdio.h>
 
-1602552897 /home/felix/proj/mgit/subcommands.h
+1602644934 /home/felix/proj/mgit/subcommands.h
 	"cmd_init.h"
 	"cmd_hash_object.h"
 	"cmd_cat_file.h"
@@ -21,10 +21,10 @@
 1602387837 /home/felix/proj/mgit/init.h
 	"types.h"
 
-1602552879 /home/felix/proj/mgit/types.h
+1602646106 /home/felix/proj/mgit/types.h
 	<stdio.h>
 
-1602553822 source:/home/felix/proj/mgit/objects.c
+1602646816 source:/home/felix/proj/mgit/objects.c
 	"objects.h"
 	"filesystem.h"
 	<stdio.h>
@@ -32,30 +32,31 @@
 	<string.h>
 	<openssl/sha.h>
 
-1602553840 /home/felix/proj/mgit/objects.h
+1602646611 /home/felix/proj/mgit/objects.h
 	"types.h"
 
 1602435488 source:/home/felix/proj/mgit/filesystem.c
 	<sys/types.h>
 	<sys/stat.h>
 
-1602433201 /home/felix/proj/mgit/filesystem.h
+1602646828 /home/felix/proj/mgit/filesystem.h
 
-1602387837 /home/felix/proj/mgit/cmd_init.h
+1602644934 /home/felix/proj/mgit/cmd_init.h
 	"types.h"
 
-1602436011 /home/felix/proj/mgit/cmd_hash_object.h
+1602644934 /home/felix/proj/mgit/cmd_hash_object.h
 	"types.h"
 
-1602446261 source:/home/felix/proj/mgit/cmd_hash_object.c
+1602646776 source:/home/felix/proj/mgit/cmd_hash_object.c
 	"cmd_hash_object.h"
 	"objects.h"
+	"types.h"
 	<stdio.h>
 
-1602553643 source:/home/felix/proj/mgit/cmd_cat_file.c
+1602646789 source:/home/felix/proj/mgit/cmd_cat_file.c
 	"cmd_cat_file.h"
 	"objects.h"
 
-1602552866 /home/felix/proj/mgit/cmd_cat_file.h
+1602644934 /home/felix/proj/mgit/cmd_cat_file.h
 	"types.h"
 

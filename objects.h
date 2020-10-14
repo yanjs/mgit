@@ -1,5 +1,5 @@
-#ifndef _OBJECTS_H
-#define _OBJECTS_H
+#ifndef MGIT_OBJECTS_H
+#define MGIT_OBJECTS_H
 
 #include "types.h"
 
@@ -11,7 +11,7 @@ int init_mgit_dir(const char* path);
 
 int hash_object(const char* path);
 
-int sha_file(char dest_hash[HASH_STRING_BYTES], const char* path);
+int get_file_hash(mgit_hash_t hash, const char* path);
 
 int cat_object(const char* path, file_handler* handler);
-#endif // _OBJECTS_H
+#endif // MGIT_OBJECTS_H

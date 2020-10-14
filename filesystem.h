@@ -1,5 +1,6 @@
-#ifndef _FILESYSTEM_H
-#define _FILESYSTEM_H
+#ifndef MGIT_FILESYSTEM_H
+#define MGIT_FILESYSTEM_H
 
 int fs_mkdir(const char* path);
-#endif // _FILESYSTEM_H
+
+#endif // MGIT_FILESYSTEM_H

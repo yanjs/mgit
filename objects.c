@@ -19,17 +19,23 @@ int init_mgit_dir(const char* path) {
 }
 
 int hash_object(const char* path) {
-    char hash[HASH_STRING_BYTES] = {0};
+    mgit_hash_t hash = {0};
+    char hash_hex[HASH_STRING_BYTES] = {0};
     size_t n_read = 0;
     char buff[BUFSIZ] = {0};
     char f_dest_name[BUFSIZ];
 
-    sha_file(hash, path);
-    snprintf(f_dest_name, BUFSIZ, "%s/%s", MGIT_OBJECTS_FOLDER, hash);
+    get_file_hash(hash, path);
+
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf(&hash_hex[i * 2], "%02x", hash[i]);
+    }
+
+    snprintf(f_dest_name, BUFSIZ, "%s%s", MGIT_OBJECTS_FOLDER, hash_hex);
 
     FILE* dest_f = fopen(f_dest_name, "w");
     if (!dest_f) {
-        return MGIT_FILE_OPEN_ERROR;
+        return MGIT_FILE_WRITE_ERROR;
     }
     FILE* src_f = fopen(path, "r");
     if (!src_f) {
@@ -37,16 +43,19 @@ int hash_object(const char* path) {
     }
 
     while ((n_read = fread(buff, sizeof(char), BUFSIZ, src_f)) != 0) {
-        fwrite(buff, sizeof(char), n_read, dest_f);
+        if (fwrite(buff, sizeof(char), n_read, dest_f) != n_read) {
+            fclose(src_f);
+            fclose(dest_f);
+            return MGIT_FILE_WRITE_ERROR;
+        };
     }
     fclose(src_f);
     fclose(dest_f);
-    return 0;
+    return MGIT_SUCCESS;
 }
 
-int sha_file(char dest_hash[HASH_STRING_BYTES], const char* path) {
+int get_file_hash(mgit_hash_t dest_hash, const char* path) {
 
-    unsigned char hash[SHA256_DIGEST_LENGTH];
     char buff[BUFSIZ] = {'\0'};
     size_t read_len;
     SHA256_CTX sha256_ctx;
@@ -61,12 +70,9 @@ int sha_file(char dest_hash[HASH_STRING_BYTES], const char* path) {
     }
 
     fclose(f);
-    SHA256_Final(hash, &sha256_ctx);
+    SHA256_Final(dest_hash, &sha256_ctx);
 
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        sprintf(&dest_hash[i * 2], "%02x", hash[i]);
-    }
-    return 0;
+    return MGIT_SUCCESS;
 }
 
 
@@ -82,5 +88,5 @@ int cat_object(const char* hash, file_handler* handler) {
 
     fclose(f);
 
-    return 0;
+    return MGIT_SUCCESS;
 }

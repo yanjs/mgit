@@ -52,7 +52,6 @@
 		<Unit filename="objects.h" />
 		<Unit filename="subcommands.h" />
 		<Unit filename="types.h" />
-		<Unit filename="version.h" />
 		<Extensions>
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />

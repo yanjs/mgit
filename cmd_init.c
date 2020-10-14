@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+#include "types.h"
+#include "objects.h"
+
 int cmd_init(int argc, char* argv[]) {
     char* path = ".";
     if (argc >= 2) {
@@ -7,9 +10,9 @@ int cmd_init(int argc, char* argv[]) {
     }
     if (init_mgit_dir(path) != 0) {
         fprintf(stderr, "Failed to initialize empty mgit repository at %s\n", path);
-        return -1;
+        return MGIT_FILE_WRITE_ERROR;
     } else {
         printf("Initialized empty mgit repository in %s\n", path);
-        return 0;
+        return MGIT_SUCCESS;
     }
 }

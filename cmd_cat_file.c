@@ -10,12 +10,12 @@ static int print_file(FILE* fp) {
             putc(buff[i], stdout);
         }
     }
-    return 0;
+    return MGIT_SUCCESS;
 }
 
 int cmd_cat_file(int argc, const char* argv[]) {
     for (int i = 1; i < argc; ++i) {
         cat_object(argv[i], print_file);
     }
-    return 0;
+    return MGIT_SUCCESS;
 }

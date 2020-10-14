@@ -10,18 +10,24 @@ static struct cmd subcommands[] = {
 
 static const size_t n_subcommands = (sizeof(subcommands) / sizeof (struct cmd));
 
-int main(int argc, const char* argv[]) {
+int
+#ifndef MGIT_TEST_SUBCOMMANDS
+main
+#else
+test_main
+#endif
+(int argc, const char* argv[]) {
     if (argc <= 1) {
-        return -1;
+        return MGIT_ARGUMENT_ERROR;
     }
-
+#ifdef MGIT_TEST_SUBCOMMANDS
     for (int i = 0; i < argc; i++) {
-        printf("argv: %s\n", argv[i]);
+        printf("argv[%i]: %s\n", i, argv[i]);
     }
+#endif
     for (size_t i = 0; i < n_subcommands; i++) {
         if (strcmp(subcommands[i].cmd_name, argv[1]) == 0) {
-            subcommands[i].handler(argc - 1, &argv[1]);
-            return 0;
+            return subcommands[i].handler(argc - 1, &argv[1]);
         }
     }
 }
