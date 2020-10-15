@@ -1,0 +1,8 @@
+#ifndef MGIT_VERSION_H
+#define MGIT_VERSION_H
+
+#define MGIT_VERSION_MAJOR 0
+#define MGIT_VERSION_MINOR 0
+#define MGIT_VERSION_PATCH 0
+
+#endif // MGIT_VERSION_H
