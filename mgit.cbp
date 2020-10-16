@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="cat-file 6d9eacd776753f38be1ac9df0bd77e26a918a1ff61be58275ef22924e57bb90b" />
+				<Option parameters="hash-object mgit.c" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
