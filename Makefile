@@ -1,15 +1,25 @@
-DEPDIR := .deps
-DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
+SRCS=mgit.c objects.c subcommands.c filesystem.c
+OBJS=$(SRCS:.c=.o)
+DEPS=$(SRCS:.c=.d)
+CC=gcc
+CFLAGS=-Wall -Werror -g
+TARGET=mgit
+LIBS=-lssl -lcrypto
 
-COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+all: mgit
+.PHONY: all
 
-%.o : %.c
-%.o : %.c $(DEPDIR)/%.d | $(DEPDIR)
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
+mgit: $(OBJS)
+	$(CC) $(CFLAGS) $(LIBS) -o $(TARGET) $(OBJS)
 
-$(DEPDIR): ; @mkdir -p $@
+clean:
+	rm $(OBJS) $(DEPS) $(TARGET)
+.PHONY: clean
 
-DEPFILES := $(SRCS:%.c=$(DEPDIR)/%.d)
-$(DEPFILES):
+%.o: %.c %.d
+	$(CC) $(CFLAGS) -c $<
 
-include $(wildcard $(DEPFILES))
+%.d: %.c 
+	$(CC) -MM $< > $@
+
+include $(DEPS)

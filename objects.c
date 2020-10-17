@@ -7,15 +7,16 @@
 
 #include "filesystem.h"
 
-int init_mgit_dir(const char* path) {
+/**
+ * Initialize a .mgit directory here.
+ */
+int init_mgit_dir() {
   char pathbuf[BUFSIZ] = {0};
   int return_code;
 
-  snprintf(pathbuf, BUFSIZ, "%s/%s", path, MGIT_FOLDER);
-  return_code = fs_mkdir(pathbuf);
-  snprintf(pathbuf, BUFSIZ, "%s/%s", path, MGIT_OBJECTS_FOLDER);
-  return_code = fs_mkdir(pathbuf);
-
+  for (size_t i = 0; i < sizeof(mgit_directories) / sizeof(const char*); ++i) {
+    return_code = fs_mkdir(mgit_directories);
+  }
   return return_code;
 }
 
@@ -55,7 +56,7 @@ int hash_object(const char* path) {
   return MGIT_SUCCESS;
 }
 
-int get_file_hash(mgit_hash_t dest_hash, const char* path) {
+int get_file_hash(mgit_hash_t hash_dest, const char* path) {
   char buff[BUFSIZ] = {'\0'};
   size_t read_len;
   SHA256_CTX sha256_ctx;
@@ -70,7 +71,7 @@ int get_file_hash(mgit_hash_t dest_hash, const char* path) {
   }
 
   fclose(f);
-  SHA256_Final(dest_hash, &sha256_ctx);
+  SHA256_Final(hash_dest, &sha256_ctx);
 
   return MGIT_SUCCESS;
 }

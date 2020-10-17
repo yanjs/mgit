@@ -3,14 +3,15 @@
 
 #include "subcommands.h"
 
-static struct cmd subcommands[] = {
+static struct mgit_cmd subcommands[] = {
     {"cat-file", cmd_cat_file},
     {"hash-object", cmd_hash_object},
     {"init", cmd_init},
     {"write-tree", cmd_init},
 };
 
-static const size_t n_subcommands = (sizeof(subcommands) / sizeof(struct cmd));
+static const size_t n_subcommands =
+    (sizeof(subcommands) / sizeof(struct mgit_cmd));
 
 int
 #ifndef MGIT_TEST_SUBCOMMANDS

@@ -1,7 +1,7 @@
 #ifndef MGIT_FILESYSTEM_H
 #define MGIT_FILESYSTEM_H
 
-#include "types.h"
+#include "mgit_types.h"
 
 int fs_mkdir(const char* path);
 

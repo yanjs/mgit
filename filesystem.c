@@ -12,24 +12,29 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+/**
+ * Make a directory at this path.
+ */
 int fs_mkdir(const char *path) {
   return mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 }
 
+/**
+ * Return if the file at this path should be ignored.
+ */
 static int is_ignored(const char *path) {
-  const char *ignored[] = {
+  const char *should_be_ignored[] = {
       ".mgit",
   };
-  char buff[BUFSIZ];
-  char *p;
+  const char *p;
   for (p = path; *p != '\0'; ++p)
     ;
   for (; *p != '/'; --p)
     ;
   ++p;
-  strncpy(buff, p, BUFSIZ);
-  for (size_t i = 0; i < (sizeof(ignored) / sizeof(const char *)); ++i) {
-    if ((strcmp(buff, ignored[i])) == 0) {
+  for (size_t i = 0; i < (sizeof(should_be_ignored) / sizeof(const char *));
+       ++i) {
+    if ((strcmp(p, should_be_ignored[i])) == 0) {
       return 1;
     }
   }
@@ -60,12 +65,13 @@ int fs_listdir(const char *path) {
     } else if (S_ISREG(curr_stat.st_mode)) {
       if (!is_ignored(curr->d_name)) {
         children[nchildren].type = MGIT_FILE;
-        get_file_hash(&children[nchildren].hash, curr->d_name);
+        get_file_hash(&children[nchildren].hash[0], curr->d_name);
       }
     } else {
       printf("Mgit does not support this file: %s", curr->d_name);
     }
   }
+  return 0;
 }
 
 #endif  // __linux__

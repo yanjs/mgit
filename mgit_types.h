@@ -14,9 +14,9 @@ typedef int cmd_handler(int argc, const char* argv[]);
 typedef int file_handler(FILE* fp);
 typedef unsigned char mgit_hash_t[MGIT_HASH_LENGTH];
 
-struct cmd {
-    const char* cmd_name;
-    cmd_handler* handler;
+struct mgit_cmd {
+  const char* cmd_name;
+  cmd_handler* handler;
 };
 
-#endif // MGIT_TYPES_H
+#endif  // MGIT_TYPES_H

@@ -4,7 +4,7 @@ A simple git-like version control system
 
 ## Functions Implemented So Far
 
-`mgit init [path]`
+`mgit init`
 
 `mgit hash-object [files...]`
 

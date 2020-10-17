@@ -29,7 +29,7 @@ int cmd_hash_object(int argc, const char* argv[]) {
 }
 
 int cmd_init(int argc, const char* argv[]) {
-  char* path = ".";
+  const char* path = ".";
   if (argc >= 2) {
     path = argv[1];
   }

@@ -1,7 +1,7 @@
 #ifndef MGIT_SUBCOMMANDS_H
 #define MGIT_SUBCOMMANDS_H
 
-#include "types.h"
+#include "mgit_types.h"
 
 cmd_handler cmd_cat_file;
 cmd_handler cmd_hash_object;
