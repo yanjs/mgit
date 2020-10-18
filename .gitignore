@@ -54,3 +54,4 @@ dkms.conf
 # Mgit projects
 .mgit
 .vscode
+mgit

@@ -13,6 +13,17 @@
 typedef int cmd_handler(int argc, const char* argv[]);
 typedef int file_handler(FILE* fp);
 typedef unsigned char mgit_hash_t[MGIT_HASH_LENGTH];
+typedef unsigned char mgit_file_block[BUFSIZ];
+
+typedef int mgit_file_block_handler(size_t sizeof_block,
+                                    const mgit_file_block block);
+typedef int mgit_file_block_before();
+typedef int mgit_file_block_after();
+struct mgit_file_block_handlers {
+  mgit_file_block_before* before;
+  mgit_file_block_handler* handler;
+  mgit_file_block_after* after;
+};
 
 struct mgit_cmd {
   const char* cmd_name;

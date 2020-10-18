@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "objects.h"
 
 static int print_file(FILE* fp) {
@@ -22,8 +24,13 @@ int cmd_hash_object(int argc, const char* argv[]) {
     fprintf(stderr, "Too few arguments for mgit hash_object!\n");
     return MGIT_ARGUMENT_ERROR;
   }
+  char buff[BUFSIZ];
   for (int i = 1; i < argc; ++i) {
-    hash_object(argv[i]);
+    for_each_in_file(argv[i], 2, &g_mgit_fbs_hash, &g_mgit_fbs_copy);
+    strcpy(buff, MGIT_OBJECTS_FOLDER);
+    strcat(buff, mgit_fbs_get_file_hash_hex());
+    puts(mgit_fbs_get_file_hash_hex());
+    rename(MGIT_OBJECTS_FOLDER "temp", buff);
   }
   return MGIT_SUCCESS;
 }
