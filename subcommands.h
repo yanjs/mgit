@@ -1,8 +1,11 @@
 #ifndef MGIT_SUBCOMMANDS_H
 #define MGIT_SUBCOMMANDS_H
 
-#include "cmd_init.h"
-#include "cmd_hash_object.h"
-#include "cmd_cat_file.h"
+#include "mgit_types.h"
 
-#endif // MGIT_SUBCOMMANDS_H
+cmd_handler cmd_cat_file;
+cmd_handler cmd_hash_object;
+cmd_handler cmd_init;
+cmd_handler cmd_write_tree;
+
+#endif  // MGIT_SUBCOMMANDS_H
