@@ -1,18 +1,112 @@
 #include "objects.h"
 
+#include <dirent.h>
 #include <openssl/sha.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "filesystem.h"
+#include <sys/stat.h>
+#include <sys/types.h>
 
 static const char* mgit_directories[] = {
     MGIT_FOLDER,
     MGIT_OBJECTS_FOLDER,
     MGIT_DIRS_FOLDER,
 };
+
+/**
+ * Make a directory at this path.
+ */
+int fs_mkdir(const char* path) {
+  return mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+}
+
+/**
+ * Return if the file at this path should be ignored.
+ */
+int is_ignored(const char* path) {
+  const char* should_be_ignored[] = {
+      ".mgit",
+  };
+  const char* p;
+  for (p = path; *p != '\0'; ++p)
+    ;
+  for (; *p != '/'; --p)
+    ;
+  ++p;
+  for (size_t i = 0; i < (sizeof(should_be_ignored) / sizeof(const char*));
+       ++i) {
+    if ((strcmp(p, should_be_ignored[i])) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int hash_to_hex(mgit_hash_string_t* dest, mgit_hash_t* hash) {
+  for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+    sprintf(&dest[i * 2], "%02x", hash[i]);
+  }
+}
+
+static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
+  // TODO: redesign this method
+  if (is_ignored(path)) {
+    return 0;
+  }
+  DIR* dir = opendir(path);
+  if (dir == NULL) {
+    return 0;
+  }
+  struct dirent* curr;
+  struct stat curr_stat;
+  struct mgit_dirent child;
+  SHA256_CTX sha256_ctx;
+  mgit_buffer_t buffer, buffer_dest;
+  mgit_hash_string_t hash_hex;
+  snprintf(buffer, MGIT_BUFSIZ, "%s%zd", MGIT_DIRS_FOLDER, depth);
+
+  SHA256_Init(&sha256_ctx);
+
+  FILE* f = fopen(buffer, "w");
+  if (!f) return MGIT_FILE_OPEN_ERROR;
+
+  while ((curr = readdir(dir)) != NULL) {
+    lstat(curr->d_name, &curr_stat);
+    puts(curr->d_name);
+    if (S_ISDIR(curr_stat.st_mode)) {
+      // TODO
+      child.type = MGIT_DIRECTORY;
+      fs_listdir_rec(&child.hash, curr->d_name, depth + 1);
+    } else if (S_ISREG(curr_stat.st_mode)) {
+      if (!is_ignored(curr->d_name)) {
+        child.type = MGIT_FILE;
+        get_file_hash(&child.hash[0], curr->d_name);
+      }
+    } else {
+      printf("Mgit does not support this file: %s", curr->d_name);
+      continue;
+    }
+    SHA256_Update(&sha256_ctx, &child, sizeof(child));
+    fwrite(&child, sizeof(child), 1, f);
+  }
+  SHA256_Final((unsigned char*)hash, &sha256_ctx);
+
+  hash_to_hex(&hash_hex, &hash);
+  puts(hash_hex);
+  strncpy(buffer_dest, path, MGIT_BUFSIZ);
+  strncat(buffer_dest, hash_hex, MGIT_BUFSIZ);
+
+  rename(buffer, buffer_dest);
+  return 0;
+}
+
+int fs_listdir(const char* path) {
+  //
+  mgit_hash_t hash;
+  return fs_listdir_rec(&hash, path, 0);
+}
 
 /**
  * Initialize a .mgit directory here.
@@ -26,156 +120,52 @@ int init_mgit_dir() {
   return return_code;
 }
 
-// mgit hash suite start
-static SHA256_CTX sha256_ctx;
-static mgit_hash_t sha256_result;
-static char sha256_hex_result[MGIT_HASH_STRING_BYTES] = "";
-static int mgit_fbs_sha256_before() {
-  SHA256_Init(&sha256_ctx);
-  return MGIT_SUCCESS;
-}
-static int mgit_fbs_sha256_handler(size_t sizeof_block,
-                                   const mgit_file_block fb) {
-  SHA256_Update(&sha256_ctx, fb, sizeof_block);
-  return MGIT_SUCCESS;
-}
-static int mgit_fbs_sha256_after() {
-  SHA256_Final(sha256_result, &sha256_ctx);
-  return MGIT_SUCCESS;
-}
-struct mgit_file_block_handlers g_mgit_fbs_hash = {
-    mgit_fbs_sha256_before,
-    mgit_fbs_sha256_handler,
-    mgit_fbs_sha256_after,
-};
-const char* mgit_fbs_get_file_hash_hex() {
-  if (sha256_hex_result[0] == '\0') {
-    for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-      sprintf(&sha256_hex_result[i * 2], "%02x", sha256_result[i]);
-    }
-  }
-  return sha256_hex_result;
-}
-const unsigned char* mgit_fbs_get_file_hash() { return sha256_result; }
-// mgit hash suite end
-
-// mgit copy suite start
-static char* copy_dest_path = MGIT_OBJECTS_FOLDER "temp";
-static FILE* copy_dest_f;
-static int mgit_fbs_copy_before() {
-  copy_dest_f = fopen(copy_dest_path, "w");
-  if (copy_dest_f == NULL) {
-    perror("mgit_fbs_copy_before");
-    return MGIT_FILE_OPEN_ERROR;
-  }
-  return MGIT_SUCCESS;
-}
-static int mgit_fbs_copy_handler(size_t sizeof_block,
-                                 const mgit_file_block fb) {
-  if (fwrite(fb, sizeof(unsigned char), sizeof_block, copy_dest_f) !=
-      sizeof_block) {
-    return MGIT_FILE_WRITE_ERROR;
-  }
-  return MGIT_SUCCESS;
-}
-static int mgit_fbs_copy_after() {
-  fclose(copy_dest_f);
-  return MGIT_SUCCESS;
-}
-struct mgit_file_block_handlers g_mgit_fbs_copy = {
-    mgit_fbs_copy_before,
-    mgit_fbs_copy_handler,
-    mgit_fbs_copy_after,
-};
-// mgit copy suite end
-
-int for_each_in_file(const char* path, size_t nfbs, ...) {
-  FILE* f = fopen(path, "r");
-  if (f == NULL) {
-    return MGIT_FILE_OPEN_ERROR;
-  }
-  va_list vl;
-  int result = 0;
-  size_t read_len;
-  unsigned char buff[BUFSIZ];
-  struct mgit_file_block_handlers* curr_handlers;
-
-  va_start(vl, nfbs);
-  for (size_t i = 0; i < nfbs; ++i) {
-    curr_handlers = va_arg(vl, struct mgit_file_block_handlers*);
-    if (curr_handlers != NULL && curr_handlers->before != NULL) {
-      if (curr_handlers->before() != MGIT_SUCCESS) {
-        curr_handlers->handler = NULL;
-        curr_handlers->after = NULL;
-        result = -1;
-      };
-    }
-  }
-
-  while ((read_len = fread(buff, sizeof(char), BUFSIZ, f)) > 0) {
-    va_start(vl, nfbs);
-    for (size_t i = 0; i < nfbs; ++i) {
-      curr_handlers = va_arg(vl, struct mgit_file_block_handlers*);
-      if (curr_handlers != NULL && curr_handlers->handler != NULL) {
-        if (curr_handlers->handler(read_len, buff) != MGIT_SUCCESS) {
-          curr_handlers->handler = NULL;
-          result = -1;
-        }
-      }
-    }
-  }
-
-  va_start(vl, nfbs);
-  for (size_t i = 0; i < nfbs; ++i) {
-    curr_handlers = va_arg(vl, struct mgit_file_block_handlers*);
-    if (curr_handlers != NULL && curr_handlers->after != NULL) {
-      curr_handlers->after();
-    }
-  }
-
-  va_end(vl);
-  fclose(f);
-  return result;
-}
-
 int hash_object(const char* path) {
   mgit_hash_t hash = {0};
   char hash_hex[MGIT_HASH_STRING_BYTES] = {0};
   size_t n_read = 0;
-  char buff[BUFSIZ] = {0};
-  char f_dest_name[BUFSIZ];
+  char buff[MGIT_BUFSIZ] = {0};
+  char f_dest_name[MGIT_BUFSIZ] = MGIT_OBJECTS_FOLDER;
+  SHA256_CTX sha256_ctx;
 
-  get_file_hash(hash, path);
+  FILE* dest_f = fopen(MGIT_OBJECTS_FOLDER "temp", "w");
 
-  for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-    sprintf(&hash_hex[i * 2], "%02x", hash[i]);
-  }
-
-  snprintf(f_dest_name, BUFSIZ, "%s%s", MGIT_OBJECTS_FOLDER, hash_hex);
-
-  FILE* dest_f = fopen(f_dest_name, "w");
   if (!dest_f) {
     return MGIT_FILE_WRITE_ERROR;
   }
   FILE* src_f = fopen(path, "r");
   if (!src_f) {
+    fclose(dest_f);
     return MGIT_FILE_OPEN_ERROR;
   }
 
-  while ((n_read = fread(buff, sizeof(char), BUFSIZ, src_f)) != 0) {
+  SHA256_Init(&sha256_ctx);
+
+  while ((n_read = fread(buff, sizeof(char), MGIT_BUFSIZ, src_f)) != 0) {
     if (fwrite(buff, sizeof(char), n_read, dest_f) != n_read) {
       fclose(src_f);
       fclose(dest_f);
       return MGIT_FILE_WRITE_ERROR;
     };
+    SHA256_Update(&sha256_ctx, buff, n_read);
   }
+  SHA256_Final(hash, &sha256_ctx);
+
+  for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+    snprintf(&hash_hex[i * 2], MGIT_HASH_STRING_BYTES, "%02x", hash[i]);
+  }
+  puts(hash_hex);
+  strncat(f_dest_name, hash_hex, MGIT_BUFSIZ);
+
   fclose(src_f);
   fclose(dest_f);
+  rename(MGIT_OBJECTS_FOLDER "temp", f_dest_name);
+
   return MGIT_SUCCESS;
 }
 
 int get_file_hash(mgit_hash_t hash_dest, const char* path) {
-  char buff[BUFSIZ] = {'\0'};
+  char buff[MGIT_BUFSIZ] = {'\0'};
   size_t read_len;
   SHA256_CTX sha256_ctx;
 
@@ -184,7 +174,7 @@ int get_file_hash(mgit_hash_t hash_dest, const char* path) {
     return MGIT_FILE_OPEN_ERROR;
   }
   SHA256_Init(&sha256_ctx);
-  while ((read_len = fread(buff, sizeof(char), BUFSIZ, f)) > 0) {
+  while ((read_len = fread(buff, sizeof(char), MGIT_BUFSIZ, f)) > 0) {
     SHA256_Update(&sha256_ctx, buff, read_len);
   }
 
@@ -195,8 +185,8 @@ int get_file_hash(mgit_hash_t hash_dest, const char* path) {
 }
 
 int cat_object(const char* hash, file_handler* handler) {
-  char buff[BUFSIZ];
-  snprintf(buff, BUFSIZ, "%s%s", MGIT_OBJECTS_FOLDER, hash);
+  char buff[MGIT_BUFSIZ];
+  snprintf(buff, MGIT_BUFSIZ, "%s%s", MGIT_OBJECTS_FOLDER, hash);
   FILE* f = fopen(buff, "r");
 
   if (!f) {

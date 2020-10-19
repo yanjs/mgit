@@ -9,21 +9,15 @@
 #define MGIT_FILE_WRITE_ERROR 3
 
 #define MGIT_HASH_LENGTH 32
+#define MGIT_HASH_STRING_BYTES (2 * MGIT_HASH_LENGTH + 1)
+
+#define MGIT_BUFSIZ BUFSIZ
 
 typedef int cmd_handler(int argc, const char* argv[]);
 typedef int file_handler(FILE* fp);
 typedef unsigned char mgit_hash_t[MGIT_HASH_LENGTH];
-typedef unsigned char mgit_file_block[BUFSIZ];
-
-typedef int mgit_file_block_handler(size_t sizeof_block,
-                                    const mgit_file_block block);
-typedef int mgit_file_block_before();
-typedef int mgit_file_block_after();
-struct mgit_file_block_handlers {
-  mgit_file_block_before* before;
-  mgit_file_block_handler* handler;
-  mgit_file_block_after* after;
-};
+typedef char mgit_hash_string_t[MGIT_HASH_STRING_BYTES];
+typedef char mgit_buffer_t[MGIT_BUFSIZ];
 
 struct mgit_cmd {
   const char* cmd_name;

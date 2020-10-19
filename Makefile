@@ -1,4 +1,4 @@
-SRCS=mgit.c objects.c subcommands.c filesystem.c
+SRCS=mgit.c objects.c subcommands.c
 OBJS=$(SRCS:.c=.o)
 DEPS=$(SRCS:.c=.d)
 CC=gcc
