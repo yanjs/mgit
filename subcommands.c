@@ -25,8 +25,12 @@ int cmd_hash_object(int argc, const char* argv[]) {
     fprintf(stderr, "Too few arguments for mgit hash_object!\n");
     return MGIT_ARGUMENT_ERROR;
   }
+  mgit_hash_t hash;
+  mgit_hash_string_t hash_hex;
   for (int i = 1; i < argc; ++i) {
-    hash_object(argv[i]);
+    hash_object(&hash, argv[i]);
+    hash_to_hex(&hash_hex, &hash);
+    puts(hash_hex.value);
   }
   return MGIT_SUCCESS;
 }

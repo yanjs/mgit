@@ -7,7 +7,7 @@ static struct mgit_cmd subcommands[] = {
     {"cat-file", cmd_cat_file},
     {"hash-object", cmd_hash_object},
     {"init", cmd_init},
-    {"write-tree", cmd_init},
+    {"write-tree", cmd_write_tree},
 };
 
 static const size_t n_subcommands =

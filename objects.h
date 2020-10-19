@@ -24,9 +24,10 @@ int init_mgit_dir();
 
 int is_ignored(const char* path);
 
-int hash_object(const char* path);
+int hash_to_hex(mgit_hash_string_t* hash_hex, mgit_hash_t* hash);
+int hash_object(mgit_hash_t* hash, const char* path);
 
-int get_file_hash(mgit_hash_t hash, const char* path);
+int get_file_hash(mgit_hash_t* hash, const char* path);
 
 int cat_object(const char* path, file_handler* handler);
 
