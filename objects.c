@@ -49,7 +49,7 @@ int is_ignored(const char* path) {
 }
 
 int hash_to_hex(mgit_hash_string_t* dest, mgit_hash_t* hash) {
-  for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+  for (size_t i = 0; i < MGIT_HASH_LENGTH; ++i) {
     sprintf(&dest->value[i * 2], "%02x", hash->value[i]);
   }
   return 0;
