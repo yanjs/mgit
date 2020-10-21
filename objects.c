@@ -29,6 +29,7 @@ int fs_mkdir(const char* path) {
 int is_ignored(const char* path) {
   const char* should_be_ignored[] = {
       ".mgit",
+      ".git",
       ".",
       "..",
   };
@@ -61,6 +62,7 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
   if (dir == NULL) {
     return 0;
   }
+  char pad_to_be_removed[] = "123456789012345";
   struct dirent* curr;
   struct stat curr_stat;
   struct mgit_dirent child;
@@ -76,12 +78,16 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
   if (!f) return MGIT_FILE_OPEN_ERROR;
 
   strncpy(curr_str.value, path, MGIT_BUFSIZ);
-  pbuffer_curr_next = curr_str.value + strlen(curr_str.value);
+  pbuffer_curr_next = &curr_str.value[strlen(curr_str.value)];
   if (pbuffer_curr_next != curr_str.value) (*pbuffer_curr_next) = '/';
   ++pbuffer_curr_next;
 
   while ((curr = readdir(dir)) != NULL) {
     strncpy(pbuffer_curr_next, curr->d_name, MGIT_BUFSIZ);
+    for (int i = 0; i < 15; i++) {
+      putc(pad_to_be_removed[i], stdout);
+    }
+    puts(pbuffer_curr_next);
     lstat(curr_str.value, &curr_stat);
     //#ifdef MGIT_DEBUG
     printf("Current: %s\n", curr_str.value);
