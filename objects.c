@@ -57,18 +57,16 @@ int hash_to_hex(mgit_hash_string_t* dest, mgit_hash_t* hash) {
 }
 
 static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
-  // TODO: redesign this method
+  // It's really important to know what strncpy does. I spent hours on it.
   DIR* dir = opendir(path);
   if (dir == NULL) {
     return 0;
   }
-  char pad_to_be_removed[] = "123456789012345";
-  struct dirent* curr;
-  struct stat curr_stat;
+  struct dirent* cur_dirent;
+  struct stat cur_stat;
   struct mgit_dirent child;
   SHA256_CTX sha256_ctx;
   mgit_buffer_t src_str, dest_str, curr_str;
-  char* pbuffer_curr_next;
   mgit_hash_string_t hash_hex;
   snprintf(src_str.value, MGIT_BUFSIZ, "%s%zd", MGIT_DIRS_FOLDER, depth);
 
@@ -78,28 +76,24 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
   if (!f) return MGIT_FILE_OPEN_ERROR;
 
   strncpy(curr_str.value, path, MGIT_BUFSIZ);
-  pbuffer_curr_next = &curr_str.value[strlen(curr_str.value)];
-  if (pbuffer_curr_next != curr_str.value) (*pbuffer_curr_next) = '/';
-  ++pbuffer_curr_next;
+  int curr_str_offset = strlen(curr_str.value);
+  if (curr_str_offset != 0) curr_str.value[curr_str_offset] = '/';
+  ++curr_str_offset;
 
-  while ((curr = readdir(dir)) != NULL) {
-    strncpy(pbuffer_curr_next, curr->d_name, MGIT_BUFSIZ);
-    for (int i = 0; i < 15; i++) {
-      putc(pad_to_be_removed[i], stdout);
-    }
-    puts(pbuffer_curr_next);
-    lstat(curr_str.value, &curr_stat);
-    //#ifdef MGIT_DEBUG
+  while ((cur_dirent = readdir(dir)) != NULL) {
+    sprintf(&curr_str.value[curr_str_offset], "%s", cur_dirent->d_name);
+    lstat(curr_str.value, &cur_stat);
+#ifdef MGIT_DEBUG
     printf("Current: %s\n", curr_str.value);
     fflush(stdout);
-    //#endif  // MGIT_DEBUG
+#endif  // MGIT_DEBUG
     if (is_ignored(curr_str.value)) {
       continue;
     }
-    if (S_ISDIR(curr_stat.st_mode)) {
+    if (S_ISDIR(cur_stat.st_mode)) {
       child.type = MGIT_DIRECTORY;
       fs_listdir_rec(&child.hash, curr_str.value, depth + 1);
-    } else if (S_ISREG(curr_stat.st_mode)) {
+    } else if (S_ISREG(cur_stat.st_mode)) {
       child.type = MGIT_FILE;
       hash_object(&child.hash, curr_str.value);
     } else {
@@ -110,6 +104,7 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
     fwrite(&child, sizeof(child), 1, f);
   }
   closedir(dir);
+
   SHA256_Final(hash->value, &sha256_ctx);
 
   hash_to_hex(&hash_hex, hash);
@@ -123,7 +118,11 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
 int fs_listdir(const char* path) {
   //
   mgit_hash_t hash;
-  return fs_listdir_rec(&hash, path, 0);
+  mgit_hash_string_t hash_hex;
+  fs_listdir_rec(&hash, path, 0);
+  hash_to_hex(&hash_hex, &hash);
+  printf("%s\n", hash_hex.value);
+  return 0;
 }
 
 /**

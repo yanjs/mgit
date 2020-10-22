@@ -12,3 +12,6 @@ equivalent to `git hash-object -w [files...]`
 
 `mgit cat-file [files...]`
 equivalent to `git cat-file [files...]`
+
+`mgit write-tree`
+equivalent to `git write-tree`
