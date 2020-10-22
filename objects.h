@@ -1,17 +1,36 @@
 #ifndef MGIT_OBJECTS_H
 #define MGIT_OBJECTS_H
 
-#include "types.h"
+#include "mgit_types.h"
 
-#define HASH_STRING_BYTES 65
 #define MGIT_FOLDER ".mgit/"
 #define MGIT_OBJECTS_FOLDER MGIT_FOLDER "objects/"
+#define MGIT_DIRS_FOLDER MGIT_FOLDER "dirs/"
 
-int init_mgit_dir(const char* path);
+int fs_mkdir(const char* path);
 
-int hash_object(const char* path);
+typedef enum mgit_file_enum {
+  MGIT_FILE,
+  MGIT_DIRECTORY,
+  MGIT_SYMLINK,
+} mgit_file_t;
 
-int get_file_hash(mgit_hash_t hash, const char* path);
+struct mgit_dirent {
+  mgit_hash_t hash;
+  mgit_file_t type;
+};
+
+int init_mgit_dir();
+
+int is_ignored(const char* path);
+
+int hash_to_hex(mgit_hash_string_t* hash_hex, mgit_hash_t* hash);
+int hash_object(mgit_hash_t* hash, const char* path);
+
+int get_file_hash(mgit_hash_t* hash, const char* path);
 
 int cat_object(const char* path, file_handler* handler);
-#endif // MGIT_OBJECTS_H
+
+int fs_listdir(const char* path);
+
+#endif  // MGIT_OBJECTS_H
