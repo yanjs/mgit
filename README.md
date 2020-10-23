@@ -15,3 +15,7 @@ equivalent to `git cat-file [files...]`
 
 `mgit write-tree`
 equivalent to `git write-tree`
+
+## Next function
+
+`mgit read-tree`
