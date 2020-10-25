@@ -68,6 +68,7 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
   SHA256_CTX sha256_ctx;
   mgit_buffer_t src_str, dest_str, curr_str;
   mgit_hash_string_t hash_hex;
+
   snprintf(src_str.value, MGIT_BUFSIZ, "%s%zd", MGIT_DIRS_FOLDER, depth);
 
   SHA256_Init(&sha256_ctx);
@@ -82,6 +83,7 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
 
   while ((cur_dirent = readdir(dir)) != NULL) {
     sprintf(&curr_str.value[curr_str_offset], "%s", cur_dirent->d_name);
+    child.name_size = strlen(cur_dirent->d_name);
     lstat(curr_str.value, &cur_stat);
 #ifdef MGIT_DEBUG
     printf("Current: %s\n", curr_str.value);
@@ -100,8 +102,9 @@ static int fs_listdir_rec(mgit_hash_t* hash, const char* path, size_t depth) {
       printf("Mgit does not support this file: %s\n", curr_str.value);
       continue;
     }
-    SHA256_Update(&sha256_ctx, &child, sizeof(child));
+    SHA256_Update(&sha256_ctx, &child.hash, sizeof(child));
     fwrite(&child, sizeof(child), 1, f);
+    fwrite(cur_dirent->d_name, child.name_size, 1, f);
   }
   closedir(dir);
 
