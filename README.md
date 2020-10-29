@@ -4,22 +4,13 @@ A simple git-like version control system
 
 ## Functions Implemented So Far
 
-`mgit init`
+| Mgit command                  | Equivalent git command          |
+| ----------------------------- | ------------------------------- |
+| `mgit init`                   | `git init`                      |
+| `mgit hash-object [files...]` | `git hash-object -w [files...]` |
+| `mgit cat-file [files...]`    | `git cat-file [files...]`       |
+| `mgit write-tree`             | `git write-tree`                |
 
-equivalent to `git init`
-
-`mgit hash-object [files...]`
-
-equivalent to `git hash-object -w [files...]`
-
-`mgit cat-file [files...]`
-
-equivalent to `git cat-file [files...]`
-
-`mgit write-tree`
-
-equivalent to `git write-tree`
-
-## Next function
+## Next function to be implemented
 
 `mgit read-tree`
