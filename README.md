@@ -1,6 +1,6 @@
 # mgit
 
-A simple git-like version control system
+A simple git-like version control system that only has essential functions.
 
 ## Functions Implemented So Far
 
