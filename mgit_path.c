@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef MGIT_DEBUG
+static size_t s_mgit_path_count = 0;
+#endif
+
 /**
  * Malloc a new mgit_path_t object
  */
@@ -20,6 +24,12 @@ mgit_path_t *mgit_path_new(const char *path_str) {
   }
 
   strcpy(p->value, path_str);
+
+#ifdef MGIT_DEBUG
+  s_mgit_path_count++;
+  printf("new mgit_path object, mgit_path_count: %zd\n", s_mgit_path_count);
+#endif
+
   return p;
 }
 
@@ -92,5 +102,9 @@ int mgit_path_append(mgit_path_t *dest, const char *src) {
 int mgit_path_del(mgit_path_t *path) {
   free(path->value);
   free(path);
+#ifdef MGIT_DEBUG
+  s_mgit_path_count--;
+  printf("del mgit_path object, mgit_path_count: %zd\n", s_mgit_path_count);
+#endif
   return MGIT_SUCCESS;
 }
