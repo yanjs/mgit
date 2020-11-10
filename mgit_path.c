@@ -8,20 +8,39 @@ static size_t s_mgit_path_count = 0;
 #endif
 
 /**
- * Malloc a new mgit_path_t object
+ * calloc a new mgit_path_t object
  */
 mgit_path_t *mgit_path_new(const char *path_str) {
-  mgit_path_t *p = malloc(sizeof(mgit_path_t));
+  mgit_path_t *p = calloc(1, sizeof(mgit_path_t));
   if (!p) {
     return NULL;
   }
-  p->len = strlen(path_str);
-  p->capacity = p->len + MGIT_HASH_STRING_BYTES;
-  p->value = calloc(1, p->capacity * sizeof(char));
-  if (!p->value) {
+  if (!mgit_path_init(p, path_str)) {
     free(p);
     return NULL;
   }
+
+#ifdef MGIT_DEBUG
+  s_mgit_path_count++;
+  printf("new mgit_path object, mgit_path_count: %zd\n", s_mgit_path_count);
+#endif
+
+  return p;
+}
+
+/**
+ * Initialize a path object. Return NULL if malloc failed.
+ */
+mgit_path_t *mgit_path_init(mgit_path_t *p, const char *path_str) {
+  size_t len = strlen(path_str);
+  size_t capacity = len + MGIT_HASH_STRING_BYTES;
+  char *value = malloc(sizeof(char) * capacity);
+  if (!value) {
+    return NULL;
+  }
+  p->value = value;
+  p->len = len;
+  p->capacity = capacity;
 
   strcpy(p->value, path_str);
 

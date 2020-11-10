@@ -34,6 +34,7 @@ static const mgit_path_t s_mgit_dir_dirs = {
 };
 
 mgit_path_t *mgit_path_new(const char *path_str);
+mgit_path_t *mgit_path_init(mgit_path_t *path, const char *path_str);
 int mgit_path_resize(mgit_path_t *path, size_t capacity);
 
 const char *mgit_path_read(const mgit_path_t *path);
