@@ -13,17 +13,12 @@
 
 #define MGIT_BUFSIZ BUFSIZ
 
+#define NORETURN
+#define IN
+#define OUT
+
 typedef int cmd_handler(int argc, const char* argv[]);
 typedef int file_handler(FILE* fp);
-typedef struct mgit_hash {
-  unsigned char value[MGIT_HASH_LENGTH];
-} mgit_hash_t;
-typedef struct mgit_hash_string {
-  char value[MGIT_HASH_STRING_BYTES];
-} mgit_hash_string_t;
-typedef struct mgit_buffer {
-  char value[MGIT_BUFSIZ];
-} mgit_buffer_t;
 
 struct mgit_cmd {
   const char* cmd_name;
