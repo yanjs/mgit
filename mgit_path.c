@@ -127,3 +127,34 @@ int mgit_path_del(mgit_path_t *path) {
 #endif
   return MGIT_SUCCESS;
 }
+
+/**
+ * Return the last part of a mgit_path_object
+ */
+const char *mgit_path_peek(mgit_path_t *path) {
+  if (path->len == 0) {
+    return path->value;
+  }
+  char *curr = path->value + path->len;  // now points at \0
+
+  while (1) {
+    if (*curr != '/') {
+      break;
+    }
+    if (curr <= path->value) {
+      return path->value;
+    }
+    curr--;
+  }
+  // now points at the first non / char
+
+  while (1) {
+    if (*curr == '/') {
+      return curr + 1;
+    }
+    if (curr <= path->value) {
+      return path->value;
+    }
+    curr--;
+  }
+}

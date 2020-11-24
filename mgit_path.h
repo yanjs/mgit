@@ -7,7 +7,7 @@
 
 typedef struct mgit_path {
   char *value;
-  size_t len;
+  size_t len;  // the length of value w/o the trailing \0
   size_t capacity;
 } mgit_path_t;
 
@@ -42,5 +42,8 @@ int mgit_path_write(mgit_path_t *dest, const char *src);
 int mgit_path_append(mgit_path_t *dest, const char *src);
 
 int mgit_path_del(mgit_path_t *path);
+
+const char *mgit_path_pop(mgit_path_t *path);
+int mgit_path_push(mgit_path_t *path, const char *tail);
 
 #endif  // MGIT_PATH_H

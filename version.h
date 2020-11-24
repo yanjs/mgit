@@ -4,5 +4,6 @@
 #define MGIT_VERSION_MAJOR 0
 #define MGIT_VERSION_MINOR 0
 #define MGIT_VERSION_PATCH 0
+#define MGIT_NAME "mgit"
 
-#endif // MGIT_VERSION_H
+#endif  // MGIT_VERSION_H
