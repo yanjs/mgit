@@ -8,9 +8,13 @@ A simple git-like version control system that only has essential functions.
 | ----------------------------- | ------------------------------- |
 | `mgit init`                   | `git init`                      |
 | `mgit hash-object [files...]` | `git hash-object -w [files...]` |
+
+## Functions to Be Refactored
+| Mgit command                  | Equivalent git command          |
+| ----------------------------- | ------------------------------- |
 | `mgit cat-file [files...]`    | `git cat-file [files...]`       |
 | `mgit write-tree`             | `git write-tree`                |
 
-## Next function to be implemented
+## Next Function to Be Implemented
 
 `mgit read-tree`
