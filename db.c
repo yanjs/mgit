@@ -33,7 +33,7 @@ static int store(IN const char* hashstr, IN const char* filename) {
     if (nread == 0) {
       break;
     }
-    if (fwrite(buffer, nread, 1, f) != nread) {
+    if (fwrite(buffer, 1, nread, f) != nread) {
       // clear bytes written
       freopen(objname, "w", f);
       die_prompt(objname);
@@ -54,7 +54,7 @@ static int get_hash(OUT unsigned char* hash, IN const char* path) {
 
   while (1) {
     nread = fread(buffer, 1, FILE_READ_BYTES, f);
-    printf("%ld\n", nread);
+    // printf("%ld\n", nread);
     // to do in the future: test if eof
     if (nread == 0) {
       break;
@@ -63,8 +63,39 @@ static int get_hash(OUT unsigned char* hash, IN const char* path) {
   }
 
   HASH_FINAL(hash, &hashctx);
-  printf("%lx\n", *(long*)hash);
+  // printf("%lx\n", *(long*)hash);
   fclose(f);
+  return SUCCESS;
+}
+
+static int fetch(OUT FILE** tmpfile, IN const char objhex[HASH_STR_SIZE]) {
+  char objname[MAX_FILENAME_SIZE];
+  char leadername[4];
+
+  unsigned char buffer[FILE_READ_BYTES];
+  size_t nread;
+
+  leadername[0] = objhex[0];
+  leadername[1] = objhex[1];
+  leadername[2] = '/';
+  leadername[3] = '\0';
+
+  strcpy(objname, g_mgit_objects_dir);
+  strcat(objname, leadername);
+  strcat(objname, &objhex[2]);
+
+  FILE* srcf = fopen(objname, "r");
+  if (!srcf) {
+    die_prompt("There's no object with this name");
+  }
+
+  while (1) {
+    nread = fread(buffer, 1, FILE_READ_BYTES, srcf);
+    if (nread == 0) {
+      break;
+    }
+    fwrite(objname, 1, nread, *tmpfile);
+  }
   return SUCCESS;
 }
 
@@ -74,4 +105,8 @@ int db_store(OUT unsigned char hash[HASH_SIZE], IN const char* filename) {
   hash_to_str(hash_str, hash);
   store(hash_str, filename);
   return SUCCESS;
+}
+
+int db_fetch(OUT FILE** tmpfile, IN const char objhex[HASH_STR_SIZE]) {
+  return fetch(tmpfile, objhex);
 }

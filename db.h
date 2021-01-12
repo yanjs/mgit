@@ -18,7 +18,9 @@
 
 int db_store(OUT unsigned char hash[HASH_SIZE],
              IN const char* file_to_be_stored);
-int db_fetch(OUT FILE** file, IN const char* hash_of_file_to_be_fetched);
+// caller provides a tmpfile
+int db_fetch(OUT FILE** tmpfile,
+             IN const char hash_of_file_to_be_fetched[HASH_STR_SIZE]);
 int db_init(IN const char* mgit_dir_to_be_initialized);
 int db_load();
 

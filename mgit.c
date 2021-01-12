@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cmds/cat_file.h"
 #include "cmds/hash_object.h"
 #include "cmds/init.h"
 
 static struct mgit_cmd subcommands[] = {
-    //{"cat-file", cmd_cat_file},
+    {"cat-file", cmd_cat_file, CMD_LOAD_DB},
     {"hash-object", cmd_hash_object, CMD_LOAD_DB},
     {"init", cmd_init, CMD_NORMAL},
     //{"write-tree", cmd_write_tree},
